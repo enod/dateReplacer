@@ -5,6 +5,8 @@ import datetime
 
 now = datetime.datetime.now()
 now_year = unicode("%s" % (now.year))
+now_month = unicode("%s" % (now.month))
+
 
 def repl(matchobj):
     """
@@ -44,9 +46,15 @@ def repl(matchobj):
     if ch_MD:
         return u'[ENTRYe]:{0}{1}-{2}{3}'.format(ch_MD.group(1), unicode(ch_MD.group(2)), unicode(ch_MD.group(3)),
                                                  ch_MD.group(4))
-    ch_current_M = re.search(u'(\S*)同年(\d{1,2})月(\S*)', matchobj.group(1))  # 同年10月
-    if ch_current_M:
-        return u'[ENTRYf]:{0}{1}-{2}{3}'.format(ch_current_M.group(1), unicode(now_year), ch_current_M.group(2), ch_current_M.group(3))
+
+    ch_this_M = re.search(u'(\S*)同年(\d{1,2})月(\S*)', matchobj.group(1))  # 同年10月
+    if ch_this_M:
+        return u'[ENTRYf]:{0}{1}-{2}{3}'.format(ch_this_M.group(1), unicode(now_year), ch_this_M.group(2), ch_this_M.group(3))
+
+    ch_this_D = re.search(u'(\S*)本月(\d{1,2})日(\S*)', matchobj.group(1))  # 本月10日
+    if ch_this_D:
+        return u'[ENTRYg]:{0}{1}-{2}{3}'.format(ch_this_D.group(1), unicode(now_month), ch_this_D.group(2),
+                                            ch_this_D.group(3))
 
     return matchobj.group(1)
 
