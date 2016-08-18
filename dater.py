@@ -7,6 +7,12 @@ now = datetime.datetime.now()
 now_year = unicode("%s" % (now.year))
 now_month = unicode("%s" % (now.month))
 
+special_dates = {
+    "Christmas Eve":"[ADVAN]12-24 ",
+    "Taiwanese Festival": "[ADVAN]10-10 ",
+
+}
+
 
 def repl(matchobj):
     """
@@ -67,5 +73,12 @@ def mapping_replace(text):
     :param text: string from client requested page
     :return: string
     """
-    line = re.sub(r'(\S+)', repl, text, flags=re.MULTILINE)
+    robj = re.compile('|'.join(special_dates.keys()))
+    result = robj.sub(lambda m: special_dates[m.group(0)], text)
+
+
+    # testing = re.findall(ur'(Jan|Feb|Mar|Apr|May|June|July|Aug|Sept|Oct|Nov|Dec)', text, flags=re.MULTILINE)
+    # if testing: print testing
+
+    line = re.sub(r'(\S+)', repl, result, flags=re.MULTILINE)
     return line
