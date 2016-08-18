@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import re
 import dateparser
+import datetime
 
+now = datetime.datetime.now()
+now_year = unicode("%s" % (now.year))
 
 def repl(matchobj):
     """
@@ -41,6 +44,9 @@ def repl(matchobj):
     if ch_MD:
         return u'[ENTRYe]:{0}{1}-{2}{3}'.format(ch_MD.group(1), unicode(ch_MD.group(2)), unicode(ch_MD.group(3)),
                                                  ch_MD.group(4))
+    ch_current_M = re.search(u'(\s*)同年(\d{1,2})月(\s*)', matchobj.group(1))  # 同年10月
+    if ch_current_M:
+        return u'[ENTRYf]:{0}-{1}'.format(unicode(now_year), ch_current_M.group(2))
 
     return matchobj.group(1)
 
