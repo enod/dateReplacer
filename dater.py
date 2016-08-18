@@ -9,14 +9,43 @@ now_month = unicode("%s" % (now.month))
 
 special_dates = {
     "Christmas Eve":"[ADVAN]12-24 ",
-    "Taiwanese Festival": "[ADVAN]10-10 ",
-
+    "雙十節": "[ADVAN]10-10 ",
 }
+months = {
+    "Jan":1,
+    "January":1,
+    "Feb":2,
+    "February":2,
+    "Mar":3,
+    "March":3,
+    "Apr":4,
+    "April":4,
+    "May":5,
+    "June":6,
+    "July":7,
+    "Aug":8,
+    "August":8,
+    "Sept":9,
+    "Septempber":9,
+    "Oct":10,
+    "October":10,
+    "Nov":11,
+    "November":11,
+    "Dec":12,
+    "December":12
+}
+
+
+def replace(match):
+    result = u'[ENTRYc]:' + match.group(3) + '-' + unicode(months[match.group(1)]) + '-' + match.group(2)
+    if 'th' in result:
+        return result.strip('th')
+    return result
 
 
 def repl(matchobj):
     """
-    Analyzes incoming strings and replace matching date field to ISO-8601 format
+    Analyzes incoming strings that is in different language format and replace matching date field to ISO-8601 format
     according to https://en.wikipedia.org/wiki/Date_format_by_country#cite_note-113
     and http://www.iso.org/iso/home/standards/iso8601.htm
     :rtype: unicode
@@ -67,18 +96,19 @@ def repl(matchobj):
 
 def mapping_replace(text):
     """
-
     :rtype: unicode
     :type: unicode
     :param text: string from client requested page
     :return: string
     """
-    robj = re.compile('|'.join(special_dates.keys()))
-    result = robj.sub(lambda m: special_dates[m.group(0)], text)
 
+    # Oct 10, 2016 or October 10, 2015
+    text_month_out = re.sub("(Jan|Jan\S+|Feb|Feb\S+|Mar|Mar\S+|Apr|Apr\S+|May|June|July|Aug|Aug\S+|Sept|Sept\S+|Oct|Oct\S+|Nov|Nov\S+|Dec|Dec\S+) (\d+|\d+th)\, (\d+)", replace ,text,
+                         flags=re.MULTILINE)
 
-    # testing = re.findall(ur'(Jan|Feb|Mar|Apr|May|June|July|Aug|Sept|Oct|Nov|Dec)', text, flags=re.MULTILINE)
-    # if testing: print testing
+    # advanced task - Christmas Eve -> 12-24
+    special = re.compile('|'.join(special_dates.keys()))
+    text_special_out = special.sub(lambda m: special_dates[m.group(0)], text_month_out)
 
-    line = re.sub(r'(\S+)', repl, result, flags=re.MULTILINE)
-    return line
+    result = re.sub(r'(\S+)', repl, text_special_out, flags=re.MULTILINE)
+    return result
