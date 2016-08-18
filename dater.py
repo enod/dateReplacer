@@ -30,23 +30,23 @@ def repl(matchobj):
     if simple_dash:
         return u'[ENTRYb]:' + unicode(dateparser.parse(simple_dash.group(0)))
 
-    ch_YMD = re.search(ur'(\s*)(\d+)年(\d+)月(\d+)日(s*)', matchobj.group(1))  # 2016年7月14日
+    ch_YMD = re.search(ur'(\S*)(\d+)年(\d+)月(\d+)日(\S*)', matchobj.group(1))  # 2016年7月14日
     if ch_YMD:
         return u'[ENTRY_YMD]:' + ch_YMD.group(1) + unicode(
             unicode(ch_YMD.group(2)) + '-' + unicode(ch_YMD.group(3))) + '-' + unicode(ch_YMD.group(4)) + ch_YMD.group(5)
 
-    ch_YM = re.search(u'(\s*)(\d+)年(\d+)月(s*)', matchobj.group(1))  # 2016年10月
+    ch_YM = re.search(u'(\S*)(\d+)年(\d+)月(\S*)', matchobj.group(1))  # 2016年10月
     if ch_YM:
         return u'[ENTRYd]:' + ch_YM.group(1) + unicode(
             unicode(ch_YM.group(2)) + '-' + unicode(ch_YM.group(3))) + ch_YM.group(4)
 
-    ch_MD = re.search(u'(\s*)(\d{1,2})月(\d{1,2})日(s*)', matchobj.group(1))  # 10月10日
+    ch_MD = re.search(u'(\S*)(\d{1,2})月(\d{1,2})日(\S*)', matchobj.group(1))  # 10月10日
     if ch_MD:
         return u'[ENTRYe]:{0}{1}-{2}{3}'.format(ch_MD.group(1), unicode(ch_MD.group(2)), unicode(ch_MD.group(3)),
                                                  ch_MD.group(4))
-    ch_current_M = re.search(u'(\s*)同年(\d{1,2})月(\s*)', matchobj.group(1))  # 同年10月
+    ch_current_M = re.search(u'(\S*)同年(\d{1,2})月(\S*)', matchobj.group(1))  # 同年10月
     if ch_current_M:
-        return u'[ENTRYf]:{0}-{1}'.format(unicode(now_year), ch_current_M.group(2))
+        return u'[ENTRYf]:{0}{1}-{2}{3}'.format(ch_current_M.group(1), unicode(now_year), ch_current_M.group(2), ch_current_M.group(3))
 
     return matchobj.group(1)
 
@@ -59,6 +59,5 @@ def mapping_replace(text):
     :param text: string from client requested page
     :return: string
     """
-
     line = re.sub(r'(\S+)', repl, text, flags=re.MULTILINE)
     return line
